@@ -1,0 +1,351 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Chat Log</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #f4f4f4;
+            color: #333;
+        }
+
+        .navbar {
+            background-color: #4CAF50;
+            display: flex;
+            align-items: center;
+            padding: 10px 20px;
+            gap: 15px;
+            /* التحكم في المسافة بين العناصر */
+            overflow: hidden;
+        }
+
+        .navbar a {
+            color: white;
+            text-align: center;
+            padding: 10px 15px;
+            text-decoration: none;
+            font-size: 20px;
+            /* حجم الخط المناسب */
+        }
+
+        .navbar a:hover {
+            background-color: #45a049;
+        }
+
+        .navbar .user-info {
+            display: flex;
+            align-items: center;
+            flex-direction: column;
+            color: white;
+            margin-left: auto;
+            /* دفع اسم المستخدم إلى أقصى اليمين */
+        }
+
+        .navbar .user-info img {
+            border-radius: 15px;
+            width: 100px;
+            height: 100px;
+            margin-right: 10px;
+        }
+
+        .navbar .user-info p {
+            margin: 0;
+            font-weight: bold;
+            font-size: 20px;
+            /* حجم الخط المناسب */
+        }
+
+        .navbar_chat {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 10px 20px;
+            background-color: #4CAF50;
+            color: white;
+        }
+
+        .navbar_chat .search-container {
+            flex-grow: 1;
+            display: flex;
+            justify-content: center;
+            padding: 0 10px;
+        }
+
+        .navbar_chat input[type="text"] {
+            padding: 6px;
+            margin-top: 8px;
+            font-size: 15px;
+            border: none;
+            border-radius: 20px;
+            width: 60%;
+            max-width: 300px;
+            /* تحديد عرض أقصى للبحث */
+        }
+
+        .navbar_chat .new-chat-btn,
+        .navbar_chat .add-friend-btn {
+            background-color: #fff;
+            color: #4CAF50;
+            padding: 8px 15px;
+            border-radius: 5px;
+            text-decoration: none;
+            font-weight: bold;
+            cursor: pointer;
+            margin: 0 5px;
+            font-size: 14px;
+            /* حجم الخط المناسب */
+        }
+
+        .navbar_chat .new-chat-btn:hover,
+        .navbar_chat .add-friend-btn:hover {
+            background-color: #45a049;
+            color: white;
+        }
+
+        .chat-list {
+            margin: 20px;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .chat-card {
+            background-color: white;
+            padding: 15px;
+            border-radius: 10px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            margin-bottom: 10px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .chat-card h3 {
+            margin: 0;
+        }
+
+        .chat-card p {
+            margin: 0;
+            color: #666;
+        }
+
+        .friend-info {
+            display: flex;
+            align-items: center;
+            /* لضبط الصورة والنص في وسط العنصر عمودياً */
+        }
+
+        .friend-info img {
+            border-radius: 15px;
+            width: 50px;
+            height: 50px;
+            margin-right: 10px;
+            /* المسافة بين الصورة والنص */
+        }
+
+        .friend-info h3 {
+            margin: 0;
+            font-size: 16px;
+            /* حجم الخط المناسب */
+        }
+
+        .friend-info p {
+            margin: 0;
+            color: #666;
+        }
+
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 1;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            overflow: auto;
+            background-color: rgba(0, 0, 0, 0.4);
+            justify-content: center;
+            align-items: center;
+        }
+
+        .modal-content {
+            background-color: white;
+            margin: auto;
+            padding: 20px;
+            border: 1px solid #888;
+            width: 80%;
+            max-width: 500px;
+            border-radius: 10px;
+            text-align: center;
+        }
+
+        .modal-content h3 {
+            margin-top: 0;
+        }
+
+        .friend-group-list {
+            list-style-type: none;
+            padding: 0;
+            margin: 0;
+        }
+
+        .friend-group-list li {
+            padding: 10px;
+            cursor: pointer;
+        }
+
+        .friend-group-list li:hover {
+            background-color: #f0f0f0;
+        }
+
+        .close {
+            color: #aaa;
+            float: right;
+            font-size: 28px;
+            font-weight: bold;
+        }
+
+        .close:hover,
+        .close:focus {
+            color: black;
+            text-decoration: none;
+            cursor: pointer;
+        }
+
+        .footer {
+            background-color: #333;
+            color: white;
+            text-align: center;
+            padding: 10px;
+            position: fixed;
+            width: 100%;
+            bottom: 0;
+        }
+    </style>
+</head>
+
+<body>
+
+    <!-- Navbar -->
+    <div class="navbar">
+        <a href="/chatHome">Home</a>
+        <a href="/about">About</a>
+        <a href="/contact">Contact</a>
+        <a href="/friends">Friends</a>
+        <a href="/groups">Groups</a>
+        <a href="/auth/logout">Logout</a>
+        <div class="user-info">
+            <img src="uploads/<%= user.image %>" alt="Profile Picture">
+            <p>
+                <%= user.name %>
+            </p>
+        </div>
+    </div>
+
+    <!-- Chat Navigation Bar -->
+    <div class="navbar_chat">
+        <div class="new-chat-btn" onclick="openModal()">New Chat</div>
+        <div class="search-container">
+            <input type="text" placeholder="Search for a chat...">
+        </div>
+    </div>
+
+    <!-- Chat List -->
+    <div class="chat-list">
+        <% receiver.forEach((chat, i)=> { %>
+            <% if (userFriendsAndGroups[i]) { %>
+                <div class="chat-card">
+                    <div class="friend-info">
+                        <img src="uploads/<%=chat.image%>" alt="Friend's Picture">
+                        <h3>
+                            <%= chat.name %>
+                        </h3>
+                        <p>Last message: "<%= message[i]?.message %>"</p>
+                        <br>
+                        <p>(<%= message[i]?.timestamp?.toLocaleString() %>)</p>
+                    </div>
+                    <div>
+                        <button class="btn" onclick="startChat('<%= userFriendsAndGroups[i]?.id %>')">Open Chat</button>
+                    </div>
+                </div>
+                <% } else { %>
+                    <p>Data not available for index <%= i %>
+                    </p>
+                    <% } %>
+                        <% }) %>
+    </div>
+
+    <!-- Modal for New Chat -->
+    <div id="newChatModal" class="modal">
+        <div class="modal-content">
+            <span class="close" onclick="closeModal()">&times;</span>
+            <h3>Select Friend or Group</h3>
+            <ul class="friend-group-list">
+                <% userFriendsAndGroups.forEach(friendAndGroup=> { %>
+                    <li onclick="selectFriendOrGroup('<%= friendAndGroup.id %>')">
+                        <%= friendAndGroup.name %>
+                    </li>
+                    <% }) %>
+            </ul>
+
+            <!-- Form to send the selected friend's or group's ID -->
+            <form id="newChatForm" action="/chatHome/chat" method="POST" style="display: none;">
+                <input type="hidden" name="selectedId" id="selectedId">
+                <button type="submit">Start Chat</button>
+            </form>
+        </div>
+    </div>
+
+
+
+    <!-- iFrame to Maintain Socket Connection -->
+    <iframe id="socketIframe" src="/views/socket.html?sender_id=<%= user._id %>" style="display:none;"></iframe>
+
+    <!-- Footer -->
+    <div class="footer">
+        <p>&copy; 2024 ChatApp. All rights reserved.</p>
+    </div>
+
+    <script>
+        function startChat(id) {
+            var form = document.createElement('form');
+            form.method = 'POST';
+            form.action = '/chatHome/chat';
+
+            var input = document.createElement('input');
+            input.type = 'hidden';
+            input.name = 'selectedId';
+            input.value = id;
+            form.appendChild(input);
+
+            document.body.appendChild(form);
+            form.submit();
+        }
+
+        function selectFriendOrGroup(id) {
+            document.getElementById('selectedId').value = id;
+            document.getElementById('newChatForm').style.display = 'block';
+            document.getElementById('newChatForm').submit();
+        }
+
+        function openModal() {
+            document.getElementById("newChatModal").style.display = "flex";
+        }
+
+        function closeModal() {
+            document.getElementById("newChatModal").style.display = "none";
+        }
+
+        window.addEventListener('message', function (event) {
+            if (event.data.type === 'socketConnected') {
+                console.log('Socket is connected');
+            }
+        });
+    </script>
+</body>
+
+</html>

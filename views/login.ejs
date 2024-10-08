@@ -1,0 +1,190 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login/Signup</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #f4f4f4;
+            color: #333;
+        }
+
+        .container {
+            max-width: 500px;
+            margin: 50px auto;
+            background-color: white;
+            padding: 20px;
+            border-radius: 5px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        }
+
+        h2 {
+            text-align: center;
+            color: #4CAF50;
+        }
+
+        .input-group {
+            margin-bottom: 15px;
+        }
+
+        .input-group label {
+            display: block;
+            margin-bottom: 5px;
+        }
+
+        .input-group input {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+        }
+
+        .btn {
+            background-color: #4CAF50;
+            color: white;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            width: 100%;
+            text-align: center;
+            margin-bottom: 10px;
+        }
+
+        .btn:hover {
+            background-color: #45a049;
+        }
+
+        .toggle-link,
+        .forgot-password {
+            text-align: center;
+            display: block;
+            margin-top: 10px;
+            color: #4CAF50;
+            text-decoration: none;
+        }
+
+        .forgot-password:hover {
+            text-decoration: underline;
+        }
+
+        #forgotPasswordContainer {
+            display: none;
+            margin-top: 20px;
+        }
+
+        .error-message {
+            color: red;
+            margin-bottom: 15px;
+            text-align: center;
+        }
+    </style>
+</head>
+
+<body>
+
+    <div class="container" id="loginContainer"
+        style="<%= signupErrorMessage ||forgetPasswordErrorMessage ? 'display: none;' : 'display: block;' %>">
+        <h2>Login</h2>
+        <% if (loginErrorMessage) { %>
+            <div class="error-message">
+                <%= loginErrorMessage %>
+            </div>
+            <% } %>
+                <form action="/auth/login" method="post">
+                    <div class="input-group">
+                        <label for="email">Email</label>
+                        <input type="email" id="email" name="email" required>
+                    </div>
+                    <div class="input-group">
+                        <label for="password">Password</label>
+                        <input type="password" id="password" name="password" required>
+                    </div>
+                    <button type="submit" class="btn">Login</button>
+                    <a href="javascript:void(0)" class="forgot-password" onclick="showForgotPassword()">Forgot
+                        Password?</a>
+                    <a href="javascript:void(0)" class="toggle-link" onclick="showSignup()">Don't have an account? Sign
+                        up</a>
+                </form>
+    </div>
+
+    <div class="container" id="signupContainer"
+        style="<%= signupErrorMessage ? 'display: block;' : 'display: none;' %>">
+        <h2>Signup</h2>
+        <% if (signupErrorMessage) { %>
+            <div class="error-message">
+                <%= signupErrorMessage %>
+            </div>
+            <% } %>
+                <form action="/auth/signup" method="post" enctype="multipart/form-data">
+                    <div class="input-group">
+                        <label for="name">Name</label>
+                        <input type="text" id="name" name="name" required>
+                    </div>
+                    <div class="input-group">
+                        <label for="email">Email</label>
+                        <input type="email" id="email" name="email" required>
+                    </div>
+                    <div class="input-group">
+                        <label for="password">Password</label>
+                        <input type="password" id="password" name="password" required>
+                    </div>
+                    <div class="input-group">
+                        <label for="confirmPassword">Confirm Password</label>
+                        <input type="password" id="confirmPassword" name="confirmPassword" required>
+                    </div>
+                    <div class="input-group">
+                        <label for="image">Profile Image</label>
+                        <input type="file" id="image" name="image" accept="image/*">
+                    </div>
+                    <button type="submit" class="btn">Sign up</button>
+                    <a href="javascript:void(0)" class="toggle-link" onclick="showLogin()">Already have an account?
+                        Login</a>
+                </form>
+    </div>
+
+    <div class="container" id="forgotPasswordContainer"
+        style="<%= forgetPasswordErrorMessage ? 'display: block;' : 'display: none;' %>">
+        <h2>Forgot Password</h2>
+        <% if (forgetPasswordErrorMessage) { %>
+            <div class="error-message">
+                <%= forgetPasswordErrorMessage %>
+            </div>
+            <% } %>
+                <form action="/auth/forgetPassword" method="post">
+                    <div class="input-group">
+                        <label for="resetEmail">Enter your email</label>
+                        <input type="email" id="resetEmail" name="resetEmail" required>
+                    </div>
+                    <button type="submit" class="btn">Send Reset Link</button>
+                    <a href="javascript:void(0)" class="toggle-link" onclick="showLogin()">Back to Login</a>
+                </form>
+    </div>
+
+    <script>
+        function showSignup() {
+            document.getElementById('loginContainer').style.display = 'none';
+            document.getElementById('signupContainer').style.display = 'block';
+            document.getElementById('forgotPasswordContainer').style.display = 'none';
+        }
+
+        function showLogin() {
+            document.getElementById('signupContainer').style.display = 'none';
+            document.getElementById('loginContainer').style.display = 'block';
+            document.getElementById('forgotPasswordContainer').style.display = 'none';
+        }
+
+        function showForgotPassword() {
+            document.getElementById('loginContainer').style.display = 'none';
+            document.getElementById('forgotPasswordContainer').style.display = 'block';
+        }
+    </script>
+
+</body>
+
+</html>

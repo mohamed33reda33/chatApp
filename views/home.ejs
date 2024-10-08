@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Chat Home</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #f4f4f4;
+            color: #333;
+        }
+
+        .navbar {
+            background-color: #4CAF50;
+            overflow: hidden;
+            padding: 20px;
+        }
+
+        .navbar a {
+            float: left;
+            display: block;
+            color: white;
+            text-align: center;
+            padding: 14px 20px;
+            text-decoration: none;
+        }
+
+        .navbar a:hover {
+            background-color: #45a049;
+        }
+
+        .hero {
+            background-color: #4CAF50;
+            color: white;
+            padding: 100px 20px;
+            text-align: center;
+        }
+
+        .hero h1 {
+            font-size: 50px;
+            margin: 0;
+        }
+
+        .hero p {
+            font-size: 20px;
+        }
+
+        .features {
+            display: flex;
+            justify-content: space-around;
+            margin: 50px 0;
+            text-align: center;
+        }
+
+        .features div {
+            background-color: white;
+            padding: 20px;
+            border-radius: 5px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            width: 30%;
+        }
+
+        .footer {
+            background-color: #333;
+            color: white;
+            text-align: center;
+            padding: 10px;
+            position: fixed;
+            width: 100%;
+            bottom: 0;
+        }
+    </style>
+</head>
+
+<body>
+
+    <!-- Navbar -->
+    <div class="navbar">
+        <a href="/">Home</a>
+        <a href="/about">About</a>
+        <a href="/contact">Contact</a>
+        <a href="/auth">Login/Signup</a>
+
+
+    </div>
+
+    <!-- Hero Section -->
+    <div class="hero" id="home">
+        <h1>Welcome to ChatApp</h1>
+        <p>Connect with friends and family instantly</p>
+    </div>
+
+    <!-- Features Section -->
+    <div class="features">
+        <div>
+            <h2>Real-time Messaging</h2>
+            <p>Chat with friends and family in real-time.</p>
+        </div>
+        <div>
+            <h2>Group Chats</h2>
+            <p>Create and join group chats with ease.</p>
+        </div>
+        <div>
+            <h2>Media Sharing</h2>
+            <p>Share photos and videos with your contacts.</p>
+        </div>
+    </div>
+
+    <!-- Footer -->
+    <div class="footer">
+        <p>&copy; 2024 ChatApp. All rights reserved.</p>
+    </div>
+
+
+</body>
+
+</html>

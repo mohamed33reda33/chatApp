@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html lang="ar">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Socket Connection</title>
+    <script src="/socket.io/socket.io.js"></script>
+    <script>
+        function getQueryParam(name) {
+            var urlParams = new URLSearchParams(window.location.search);
+            return urlParams.get(name)?.trim();
+        }
+
+        var sender_id = getQueryParam('sender_id');
+
+        var socket = io({
+            query: {
+                sender_id: sender_id
+            }
+        });
+
+        socket.on('connect', function () {
+            console.log('Connected with sender_id:', sender_id);
+            parent.postMessage({ type: 'socketConnected' }, '*');
+        });
+
+        window.socket = socket;
+    </script>
+</head>
+
+<body>
+</body>
+
+</html>

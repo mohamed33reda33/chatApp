@@ -1,0 +1,466 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Friend Request Notifications</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #f4f4f4;
+            color: #333;
+        }
+
+        .navbar {
+            background-color: #4CAF50;
+            display: flex;
+            align-items: center;
+            padding: 10px 20px;
+            gap: 15px;
+            overflow: hidden;
+        }
+
+        .navbar a {
+            color: white;
+            text-align: center;
+            padding: 10px 15px;
+            text-decoration: none;
+            font-size: 20px;
+        }
+
+        .navbar a:hover {
+            background-color: #45a049;
+        }
+
+        .navbar .user-info {
+            display: flex;
+            align-items: center;
+            flex-direction: column;
+            color: white;
+            margin-left: auto;
+        }
+
+        .navbar .user-info img {
+            border-radius: 15px;
+            width: 100px;
+            height: 100px;
+            margin-right: 10px;
+        }
+
+        .navbar .user-info p {
+            margin: 0;
+            font-weight: bold;
+            font-size: 16px;
+        }
+
+        .notification-icon {
+            position: relative;
+            cursor: pointer;
+        }
+
+        .notification-icon img {
+            width: 30px;
+            height: 30px;
+        }
+
+        .notification-count {
+            position: absolute;
+            top: -1px;
+            right: -1px;
+            background-color: red;
+            color: white;
+            border-radius: 50%;
+            padding: 5px;
+            font-size: 10px;
+            font-weight: bold;
+        }
+
+        .notification-dropdown {
+            display: none;
+            position: absolute;
+            right: 0;
+            background-color: white;
+            box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.1);
+            width: 300px;
+            max-height: 400px;
+            overflow-y: auto;
+            z-index: 100;
+            border-radius: 10px;
+        }
+
+        .notification-dropdown.active {
+            display: block;
+        }
+
+        .notification-dropdown ul {
+            list-style: none;
+            margin: 0;
+            padding: 0;
+        }
+
+        .notification-dropdown li {
+            padding: 10px;
+            border-bottom: 1px solid #f1f1f1;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .notification-dropdown li:hover {
+            background-color: #f9f9f9;
+        }
+
+        .notification-dropdown img {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+        }
+
+        .notification-dropdown button {
+            background-color: #4CAF50;
+            color: white;
+            padding: 5px 10px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+
+        .notification-dropdown button:hover {
+            background-color: #45a049;
+        }
+
+        .friends-list {
+            display: flex;
+            flex-direction: row;
+            flex-wrap: wrap;
+            justify-content: center;
+            gap: 20px;
+            margin: 20px;
+        }
+
+        .friend-card {
+            background-color: white;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            text-align: center;
+            width: 200px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        .friend-card img {
+            border-radius: 50%;
+            width: 100px;
+            height: 100px;
+            margin-bottom: 10px;
+        }
+
+        .friend-card h3 {
+            margin: 10px 0;
+            font-size: 18px;
+        }
+
+        .friend-card p {
+            margin: 0;
+            color: #666;
+            font-size: 14px;
+        }
+
+        .friend-card button {
+            background-color: #4CAF50;
+            color: white;
+            padding: 10px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            margin-top: 10px;
+        }
+
+        .friend-card button:hover {
+            background-color: #45a049;
+        }
+
+        .notification-icon {
+            position: relative;
+            cursor: pointer;
+            background-color: #4CAF50;
+            /* لون الخلفية نفسه لشريط التنقل */
+            border-radius: 50%;
+            /* لجعلها مستديرة */
+            padding: 5px;
+            /* لإضافة مساحة داخلية */
+            display: inline-flex;
+            /* استخدام flex لتمركز المحتويات */
+            align-items: center;
+            /* توسيط المحتويات عمودياً */
+            justify-content: center;
+            /* توسيط المحتويات أفقياً */
+        }
+
+        .notification-icon img {
+            width: 50px;
+            /* حجم الأيقونة */
+            height: 50px;
+            /* حجم الأيقونة */
+        }
+
+        .navbar_chat {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 10px 20px;
+            background-color: #4CAF50;
+            color: white;
+        }
+
+        .navbar_chat .add-friend-btn {
+            background-color: #fff;
+            color: #4CAF50;
+            padding: 8px 15px;
+            border-radius: 5px;
+            text-decoration: none;
+            font-weight: bold;
+            cursor: pointer;
+            margin: 0 5px;
+            font-size: 14px;
+            /* حجم الخط المناسب */
+        }
+
+        .navbar_chat .add-friend-btn:hover {
+            background-color: #45a049;
+            color: white;
+        }
+
+        .modal {
+            display: flex;
+            /* تغيير إلى flex لتمركز المحتوى */
+            justify-content: center;
+            align-items: center;
+            position: fixed;
+            z-index: 1000;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.5);
+            /* خلفية معتمة */
+        }
+
+        .modal-content {
+            background-color: white;
+            margin: auto;
+            padding: 30px;
+            /* زيادة التباعد داخل النموذج */
+            border: 1px solid #888;
+            width: 80%;
+            max-width: 400px;
+            border-radius: 10px;
+            text-align: center;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+            /* إضافة ظل للنموذج */
+        }
+
+        .modal-content h3 {
+            margin-top: 0;
+            color: #333;
+            /* لون العنوان */
+        }
+
+        .close {
+            color: #aaa;
+            float: right;
+            font-size: 24px;
+            font-weight: bold;
+        }
+
+        .close:hover,
+        .close:focus {
+            color: black;
+            text-decoration: none;
+            cursor: pointer;
+        }
+
+        /* تحسين زر الإضافة */
+        button {
+            cursor: pointer;
+        }
+
+        button:hover {
+            background-color: #45a049;
+            /* تغيير اللون عند التمرير */
+        }
+    </style>
+</head>
+
+<body>
+
+    <div class="navbar">
+        <a href="/chatHome">Home</a>
+        <a href="/about">About</a>
+        <a href="/contact">Contact</a>
+        <a href="/friends">Friends</a>
+        <a href="/groups">Groups</a>
+        <a href="/auth/logout">Logout</a>
+
+        <div class="notification-icon" onclick="toggleDropdown()">
+            <img src="uploads/icon.png" alt="Notifications">
+            <span class="notification-count">
+                <%= user.friendRequests ? user.friendRequests.length : 0 %>
+            </span>
+
+            <div class="notification-dropdown" id="dropdown">
+                <% if (user.friendRequests && user.friendRequests.length> 0) { %>
+                    <% user.friendRequests.forEach(friend=> { %>
+                        <ul>
+                            <li>
+                                <div>
+                                    <img src="uploads/<%= friend.image %>" alt="Friend Picture">
+                                    <span>
+                                        <%= friend.name %> sent a friend request.
+                                    </span>
+                                </div>
+                                <button onclick="acceptFriendRequest('<%= friend._id%>')">Accept</button>
+                                <button onclick="rejectFriendRequest('<%= friend._id%>')">Reject</button>
+                            </li>
+                        </ul>
+                        <% }); %>
+                            <% } else { %>
+                                <p>No friend requests</p>
+                                <% } %>
+            </div>
+        </div>
+
+        <!-- Chat Navigation Bar -->
+        <div class="navbar_chat">
+            <div class="add-friend-btn" onclick="openAddFriendModal()">Add Friend</div>
+        </div>
+        <!-- Modal for Adding Friend -->
+        <div id="addFriendModal" class="modal" style="display:none;">
+            <div class="modal-content">
+                <span class="close" onclick="closeAddFriendModal()">&times;</span>
+                <h3>Add Friend by ID</h3>
+                <% if (errorMessage) { %>
+                    <div class="alert alert-danger" style="color: red;">
+                        <%= errorMessage %>
+                    </div>
+                    <% } %>
+                        <form action="/friends/addFriend" method="POST" style="text-align: center;">
+                            <input type="text" name="friendId" placeholder="Enter Friend ID"
+                                style="width: 90%; padding: 10px; margin-top: 20px; border-radius: 5px; border: 1px solid #ccc;"
+                                required>
+                            <button type="submit"
+                                style="padding: 10px 20px; margin-top: 20px; background-color: #4CAF50; color: white; border: none; border-radius: 5px; transition: background-color 0.3s;">
+                                Add Friend
+                            </button>
+                        </form>
+            </div>
+        </div>
+
+        <div class="user-info">
+            <img src="uploads/<%= user.image %>" alt="Profile Picture">
+            <p>
+                <%= user.name %>
+            </p>
+        </div>
+    </div>
+
+    <div class="friends-list">
+        <% user.friends.forEach(friend=> { %>
+            <div class="friend-card">
+                <img src="uploads/<%= friend.image %>" alt="Friend's Picture">
+                <h3>
+                    <%= friend.name %>
+                </h3>
+                <p>Friend since <%= friend.since %>
+                </p>
+                <button onclick="startChat('<%= friend.id %>')">Start Chat</button>
+                <button onclick="deleteFriend('<%= friend.id %>')">Delete Friend</button>
+            </div>
+            <% }) %>
+    </div>
+
+    <script>
+        function toggleDropdown() {
+            var dropdown = document.getElementById('dropdown');
+            dropdown.classList.toggle('active');
+        }
+        function acceptFriendRequest(id) {
+            // console.log(8080);
+            const form = document.createElement("form");
+            form.method = "post"
+            form.action = "/friends/confirmFriendRequests"
+
+            var input = document.createElement('input');
+            input.type = 'hidden';
+            input.name = 'friendId';
+            input.value = id;
+            form.appendChild(input);
+
+            document.body.appendChild(form);
+            form.submit();
+        }
+        function rejectFriendRequest(id) {
+            // console.log(8080);
+            const form = document.createElement("form");
+            form.method = "post"
+            form.action = "/friends/rejectFriendRequests"
+
+            var input = document.createElement('input');
+            input.type = 'hidden';
+            input.name = 'friendId';
+            input.value = id;
+            form.appendChild(input);
+
+            document.body.appendChild(form);
+            form.submit();
+        }
+        function startChat(id) {
+            var form = document.createElement('form');
+            form.method = 'POST';
+            form.action = '/chatHome/chat';
+
+            var input = document.createElement('input');
+            input.type = 'hidden';
+            input.name = 'selectedId';
+            input.value = id;
+            form.appendChild(input);
+
+            document.body.appendChild(form);
+            form.submit();
+        }
+        function deleteFriend(id) {
+            var form = document.createElement('form');
+            form.method = 'POST';
+            form.action = '/friends/deleteFriend';
+
+            var input = document.createElement('input');
+            input.type = 'hidden';
+            input.name = 'friendId';
+            input.value = id;
+            form.appendChild(input);
+
+            document.body.appendChild(form);
+            form.submit();
+        }
+
+        function closeAddFriendModal() {
+            document.getElementById("addFriendModal").style.display = "none";
+        }
+        function openAddFriendModal() {
+            document.getElementById("addFriendModal").style.display = "flex";
+        }
+        window.onload = function () {
+            <%if (errorMessage) {%>
+                document.getElementById("addFriendModal").style.display="flex";
+                <%}%>
+        }
+    </script>
+
+</body>
+
+</html>

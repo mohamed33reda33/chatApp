@@ -1,0 +1,609 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Chat Room</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #eef1f5;
+            color: #333;
+            height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .navbar {
+            background-color: #4CAF50;
+            padding: 15px 20px;
+            /* توازن padding للنافبار */
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+            display: flex;
+            align-items: center;
+            flex-wrap: wrap;
+            /* السماح للتفاف العناصر عند الحاجة */
+        }
+
+        .navbar a {
+            color: white;
+            text-align: center;
+            padding: 10px 15px;
+            text-decoration: none;
+            font-size: 20px;
+            /* حجم الخط المناسب */
+        }
+
+        .navbar a:hover {
+            background-color: #45a049;
+        }
+
+        .navbar .user-info {
+            display: flex;
+            align-items: center;
+            flex-direction: column;
+            color: white;
+            margin-left: auto;
+            /* دفع اسم المستخدم إلى أقصى اليمين */
+        }
+
+        .navbar .user-info img {
+            border-radius: 15px;
+            width: 100px;
+            height: 100px;
+            margin-right: 10px;
+        }
+
+        .navbar .user-info p {
+            margin: 0;
+            font-weight: bold;
+            font-size: 20px;
+            /* حجم الخط المناسب */
+        }
+
+        .main-container {
+            display: flex;
+            flex-grow: 1;
+            height: 100vh;
+            overflow: hidden;
+        }
+
+        .friend-info {
+            width: 25%;
+            padding: 20px;
+            background-color: #f4f4f4;
+            border-right: 1px solid #ddd;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .friend-info img {
+            border-radius: 15px;
+            width: 200px;
+            height: 200px;
+            margin-right: 10px;
+        }
+
+        .friend-info h2 {
+            margin-top: 0;
+            font-size: 24px;
+        }
+
+        .friend-info p {
+            font-size: 16px;
+            color: #666;
+        }
+
+        .friend-info button {
+            width: 100%;
+            padding: 10px;
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            margin-top: 10px;
+            cursor: pointer;
+            font-size: 16px;
+        }
+
+        .friend-info .delete-btn {
+            background-color: #e74c3c;
+        }
+
+        .chat-container {
+            width: 75%;
+            display: flex;
+            flex-direction: column;
+            background-color: #ffffff;
+            border-radius: 10px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+            margin: 20px;
+            position: relative;
+        }
+
+        .chat-window {
+            flex-grow: 1;
+            padding: 20px;
+            overflow-y: auto;
+            max-height: calc(100vh - 160px);
+            /* تم تعديل الارتفاع لاستيعاب الفاصل */
+        }
+
+        #messages {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+        }
+
+        .message {
+            margin-bottom: 15px;
+            display: flex;
+        }
+
+        .message.user {
+            justify-content: flex-end;
+        }
+
+        .message.received {
+            justify-content: flex-start;
+        }
+
+        .message .text {
+            max-width: 70%;
+            padding: 10px;
+            border-radius: 20px;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+        }
+
+        .message.user .text {
+            background-color: #4CAF50;
+            color: white;
+            border-bottom-right-radius: 0;
+        }
+
+        .message.received .text {
+            background-color: #e1ffc7;
+            color: #333;
+            border-bottom-left-radius: 0;
+        }
+
+        .chat-input {
+            display: flex;
+            padding: 15px;
+            margin-top: 10px;
+            /* فاصل بين الرسائل ومنطقة الإدخال */
+            border-top: 1px solid #ddd;
+            background-color: #f4f4f4;
+            /* لون خلفية مختلف لمنطقة الإدخال */
+        }
+
+        .chat-input input {
+            flex-grow: 1;
+            padding: 10px;
+            border: 1px solid #ccc;
+            border-radius: 25px;
+            outline: none;
+            font-size: 16px;
+        }
+
+        .chat-input button {
+            padding: 10px 30px;
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            border-radius: 25px;
+            margin-left: 20px;
+            cursor: pointer;
+            font-size: 16px;
+        }
+
+        .chat-input button:hover {
+            background-color: #45a049;
+        }
+
+        .video-container {
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            /* لنقل الفيديو إلى المنتصف */
+            width: 80%;
+            height: 80%;
+            background-color: #202124;
+            display: none;
+            /* تفعيل Flexbox */
+            justify-content: center;
+            /* محاذاة أفقية في المنتصف */
+            align-items: center;
+            /* محاذاة عمودية في المنتصف */
+            z-index: 1000;
+
+        }
+
+        .video-wrapper {
+            position: relative;
+            width: 100%;
+            height: 100%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        #remoteVideo {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        #localVideo {
+            position: absolute;
+            width: 180px;
+            height: 120px;
+            object-fit: cover;
+            border-radius: 8px;
+            bottom: 20px;
+            right: 20px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
+            transition: all 0.3s ease;
+        }
+
+        #localVideo:hover {
+            transform: scale(1.05);
+        }
+
+        #endCallBtn {
+            position: absolute;
+            bottom: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            background-color: #ea4335;
+            color: white;
+            border: none;
+            border-radius: 24px;
+            padding: 12px 24px;
+            font-size: 16px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        #endCallBtn:hover {
+            background-color: #d33828;
+        }
+
+        .call-notification {
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background-color: #f0f0f0;
+            padding: 15px;
+            border-radius: 5px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+            display: none;
+            justify-content: center;
+            /* محاذاة أفقية في المنتصف */
+            align-items: center;
+        }
+
+        .call-notification button {
+            margin: 5px;
+            padding: 5px 10px;
+            border: none;
+            border-radius: 3px;
+            cursor: pointer;
+        }
+
+        .call-notification button.accept {
+            background-color: #4CAF50;
+            color: white;
+        }
+
+        .call-notification button.reject {
+            background-color: #f44336;
+            color: white;
+        }
+    </style>
+</head>
+
+<body>
+
+    <!-- Navbar -->
+    <div class="navbar">
+        <a href="/chatHome">Home</a>
+        <a href="/about">About</a>
+        <a href="/contact">Contact</a>
+        <a href="/friends">Friends</a>
+        <a href="/groups">Groups</a>
+        <a href="/auth/logout">Logout</a>
+        <div class="user-info">
+            <img src="/uploads/<%= infoObject.user.image %>" alt="Profile Picture">
+            <p>
+                <%= infoObject.user.name %>
+            </p>
+        </div>
+    </div>
+
+    <!-- Main Container -->
+    <div class="main-container">
+        <!-- Friend Info Section -->
+        <div class="friend-info">
+            <img src="/uploads/<%=infoObject.receiverUser.image%>" alt="Friend's Picture">
+            <h2>
+                <%=infoObject.receiverUser.name%>
+            </h2>
+
+            <p id="receiverUserStatus"></p>
+            <button id="startCallBtn">Start Call</button>
+            <audio id="remoteAudio" autoplay></audio>
+
+        </div>
+
+        <!-- Chat Section -->
+        <div class="chat-container">
+            <ul id="messages" class="chat-window">
+                <!-- Messages will be here -->
+            </ul>
+            <form class="chat-input" id="chatForm">
+                <input type="text" id="messageInput" placeholder="Type your message..." required>
+                <button type="submit">Send</button>
+            </form>
+        </div>
+    </div>
+
+    <iframe id="socketIframe" src="/views/socket.html?sender_id=<%=infoObject.user._id %>"
+        style="display:none;"></iframe>
+
+    <div class="video-container">
+        <div class="video-wrapper">
+            <video id="remoteVideo" autoplay></video>
+            <video id="localVideo" autoplay muted></video>
+            <button id="endCallBtn">End Call</button>
+        </div>
+    </div>
+
+    <div class="call-notification" id="callNotification">
+        <p>Incoming call...</p>
+        <button class="accept" id="acceptCallBtn">Accept</button>
+        <button class="reject" id="rejectCallBtn">Reject</button>
+    </div>
+
+    <script src="https://unpkg.com/peerjs@1.5.4/dist/peerjs.min.js"></script>
+
+    <script>
+        var socket;
+        let lastLoadedMessage = null;
+        const sender_id = "<%=infoObject.user._id %>";
+        const receiver_id = "<%=infoObject.receiverUser._id %>";
+        const chatMessages = JSON.parse('<%- infoObject.chatMessages %>');
+
+        const form = document.getElementById('chatForm');
+        const messageInput = document.getElementById('messageInput');
+        const messages = document.getElementById('messages');
+        const startCallBtn = document.getElementById('startCallBtn');
+
+
+        window.addEventListener('message', function (event) {
+            if (event.data.type === 'socketConnected') {
+                var iframe = document.getElementById('socketIframe');
+                socket = iframe.contentWindow.socket;
+                socket.emit("receiverUserStatus", { receiver_id: receiver_id });
+                socket.on("receiverUserStatus", (data) => {
+                    if (data.receiver_id === receiver_id) {
+                        const p = document.getElementById('receiverUserStatus');
+                        if (data.isOnline) {
+                            p.textContent = "Online";
+                        } else {
+                            const lastActiveDate = new Date(data.lastActive);
+                            p.textContent = `Last active: ${lastActiveDate.toLocaleString()}`;
+                        }
+                    }
+                });
+
+                chatMessages.forEach(message => {
+                    const item = document.createElement('li');
+                    if (message.sender_id === sender_id) {
+                        item.classList.add('message', 'user');
+                    } else {
+                        item.classList.add('message', 'received');
+                    }
+
+                    const text = document.createElement('div');
+                    text.classList.add('text');
+                    text.textContent = message.message;
+                    item.appendChild(text);
+                    messages.appendChild(item);
+
+                    messages.scrollTop = messages.scrollHeight;
+                });
+
+                form.addEventListener('submit', (e) => {
+                    e.preventDefault();
+                    const item = document.createElement('li');
+                    item.classList.add('message', 'user');
+                    const text = document.createElement('div');
+                    text.classList.add('text');
+                    text.textContent = messageInput.value;
+                    item.appendChild(text);
+                    messages.appendChild(item);
+
+                    messages.scrollTop = messages.scrollHeight;
+
+                    const data = {
+                        message: messageInput.value,
+                        sender_id: sender_id,
+                        receiver_id: receiver_id,
+
+                    };
+
+                    socket.emit('messageFromClient', data);
+                    messageInput.value = '';
+                });
+
+                socket.on('messageFromServer', (data) => {
+                    const item = document.createElement('li');
+                    item.classList.add('message', 'received');
+                    const text = document.createElement('div');
+                    text.classList.add('text');
+                    text.textContent = data.message;
+                    item.appendChild(text);
+                    messages.appendChild(item);
+
+                    messages.scrollTop = messages.scrollHeight;
+                });
+
+                let peer = new Peer({
+                    initiator: true,
+                    trickle: false,
+                    config: {
+                        iceServers: [
+                            {
+                                urls: 'turn:chat-app.ddns.net:3478',
+                                username: 'mohamed33reda33',
+                                credential: 'B+mohamed24'
+                            }
+                        ]
+                    }
+                });
+                let peerId = null;
+                peer.on("open", id => {
+                    peerId = id;
+                    socket.emit("saveUserPeerId", peerId);
+
+                })
+
+                const videoContainer = document.querySelector('.video-container');
+                const remoteVideo = document.getElementById('remoteVideo');
+                const localVideo = document.getElementById('localVideo');
+                const endCallBtn = document.getElementById('endCallBtn');
+                let currentCall = null;
+                let localStream = null;
+
+                function showVideoCall(stream) {
+                    remoteVideo.srcObject = stream;
+                    videoContainer.style.display = 'flex';
+                }
+
+                startCallBtn.onclick = () => {
+                    socket.emit("requestPeerId", { receiver_id: receiver_id, sender_id: sender_id });
+                }
+
+                socket.on("getNewCall", () => {
+                    var callNotification = document.getElementById("callNotification");
+                    callNotification.style.display = "block";
+                    const acceptCallBtn = document.getElementById("acceptCallBtn");
+                    const rejectCallBtn = document.getElementById("rejectCallBtn");
+
+                    acceptCallBtn.onclick = () => {
+                        socket.emit("acceptCall", { receiver_id: receiver_id, sender_id: sender_id })
+                        callNotification.style.display = "none";
+                    }
+                    rejectCallBtn.onclick = () => {
+                        socket.emit("rejectCall", receiver_id);
+                        callNotification.style.display = "none";
+                    }
+
+                })
+
+                socket.on("rejectedCall", () => {
+                    const rejectedCallNotification = document.createElement("p");
+                    rejectedCallNotification.classList.add("rejectedCallNotification");
+                    rejectedCallNotification.textContent = "The call was rejected.";
+
+                    rejectedCallNotification.style.position = "fixed";
+                    rejectedCallNotification.style.top = "50%";
+                    rejectedCallNotification.style.left = "50%";
+                    rejectedCallNotification.style.transform = "translate(-50%, -50%)";
+                    rejectedCallNotification.style.backgroundColor = "rgba(0, 0, 0, 0.7)";
+                    rejectedCallNotification.style.color = "white";
+                    rejectedCallNotification.style.padding = "20px";
+                    rejectedCallNotification.style.borderRadius = "10px";
+                    rejectedCallNotification.style.zIndex = "1000";
+                    document.body.appendChild(rejectedCallNotification);
+
+                    setTimeout(() => {
+                        rejectedCallNotification.remove();
+                    }, 5000);
+                });
+
+
+                socket.on("getReceiverPeerId", (receiverPeerId) => {
+                    receiverPeerId = receiverPeerId;
+                });
+
+                socket.on("startCall", (receiverPeerId) => {
+                    navigator.mediaDevices.getUserMedia({ audio: true, video: true })
+                        .then(stream => {
+                            localStream = stream;
+                            localVideo.srcObject = stream;
+                            videoContainer.style.display = 'flex';
+
+                            currentCall = peer.call(receiverPeerId, stream);
+
+                            currentCall.on("stream", (remoteStream) => {
+                                showVideoCall(remoteStream);
+                            });
+
+                            currentCall.on("error", (err) => {
+                                console.error("Call error:", err);
+                            });
+                        })
+                        .catch(error => {
+                            console.error("Error getting media:", error);
+                        });
+                });
+
+                peer.on("call", call => {
+                    navigator.mediaDevices.getUserMedia({ audio: true, video: true })
+                        .then(stream => {
+                            localStream = stream;
+                            localVideo.srcObject = stream;
+                            videoContainer.style.display = 'flex';
+
+                            call.answer(stream);
+
+                            currentCall = call;
+
+                            call.on("stream", (remoteStream) => {
+                                showVideoCall(remoteStream);
+                            });
+
+                            call.on("error", (err) => {
+                                console.error("Call error:", err);
+                            });
+                        })
+                        .catch(error => {
+                            console.error("Error answering call:", error);
+                        });
+                });
+
+                endCallBtn.onclick = () => {
+                    endCallFun(currentCall, localStream)
+                    socket.emit("endCall", receiver_id)
+                }
+                socket.on("endedCall", () => {
+                    endCallFun(currentCall, localStream)
+                })
+                function endCallFun(currentCall, localStream) {
+                    if (currentCall) {
+                        currentCall.close();
+                    }
+                    if (localStream) {
+                        localStream.getTracks().forEach(track => track.stop());
+                    }
+                    videoContainer.style.display = 'none';
+                    remoteVideo.srcObject = null;
+                    localVideo.srcObject = null;
+                }
+
+            }
+        });
+    </script>
+
+</body>
+
+</html>
